@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes stretch {
+  0%, 85%, 100% { 
+    transform: scaleX(1);
+  }
+  90%, 95% { 
+    transform: scaleX(4);
+  }
+}
+
+.animate-stretch {
+  animation: stretch 8s ease-in-out infinite;
+  transform-origin: left center;
+}
