@@ -58,6 +58,7 @@ export default function Dashboard() {
     };
 
     fetchCallData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeRange]);
 
   return (
