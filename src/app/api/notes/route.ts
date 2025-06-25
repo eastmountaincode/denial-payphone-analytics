@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory storage for development
-let devNotes: { [key: string]: string } = {};
+const devNotes: { [key: string]: string } = {};
 
 // Try to use Vercel KV, fall back to in-memory for development
 const getKV = async () => {
   try {
     const { kv } = await import('@vercel/kv');
     return kv;
-  } catch (error) {
+  } catch {
     console.log('Vercel KV not available, using in-memory storage for development');
     return null;
   }

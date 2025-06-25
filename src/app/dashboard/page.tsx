@@ -25,7 +25,7 @@ export default function Dashboard() {
   const fetchNotes = async (startDate: string, endDate: string) => {
     try {
       const keys = [];
-      let currentDate = new Date(startDate);
+      const currentDate = new Date(startDate);
       const end = new Date(endDate);
       
       while (currentDate <= end) {
