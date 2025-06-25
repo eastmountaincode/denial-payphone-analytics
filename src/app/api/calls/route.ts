@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const twilio = require('twilio');
+import twilio from 'twilio';
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,7 +25,11 @@ export async function GET(request: NextRequest) {
     startDate.setDate(startDate.getDate() - days);
     
     // Build query parameters
-    const queryParams: any = {
+    const queryParams: {
+      direction: string;
+      limit: number;
+      to?: string;
+    } = {
       // startTime: startDate,  // Commenting out date filter - it was causing issues
       direction: 'inbound', // Only incoming calls
       limit: 1000
@@ -53,7 +56,7 @@ export async function GET(request: NextRequest) {
     }
     
     // Process calls
-    calls.forEach((call: any) => {
+    calls.forEach((call) => {
       const callDate = new Date(call.dateCreated).toISOString().split('T')[0];
       if (callsByDate[callDate]) {
         callsByDate[callDate].total += 1;

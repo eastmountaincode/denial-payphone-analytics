@@ -9,10 +9,11 @@ interface CallData {
 interface CallChartProps {
   callData: CallData[];
   showUnique: boolean;
-  timeRange: string;
+  notes: { [key: string]: string };
+  onNoteClick: (date: string) => void;
 }
 
-export default function CallChart({ callData, showUnique, timeRange }: CallChartProps) {
+export default function CallChart({ callData, showUnique, notes, onNoteClick }: CallChartProps) {
   const maxCalls = Math.max(...callData.map(d => showUnique ? d.uniqueCalls : d.totalCalls));
 
   return (
@@ -24,6 +25,7 @@ export default function CallChart({ callData, showUnique, timeRange }: CallChart
         <div className="h-64 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
           {callData.map((data, index) => {
             const callCount = showUnique ? data.uniqueCalls : data.totalCalls;
+            const hasNote = notes[data.date];
             
             // Show dates strategically based on time range
             let showDate = false;
@@ -63,8 +65,27 @@ export default function CallChart({ callData, showUnique, timeRange }: CallChart
                     )}
                   </div>
                   
-                  {/* Subtle circle for each date - always at same position - hidden on mobile */}
-                  <div className="hidden sm:block w-4 h-4 border border-gray-600 rounded-full"></div>
+                  {/* Note circle - different states for notes vs no notes */}
+                  <div 
+                    className={`hidden sm:block w-4 h-4 rounded-full cursor-pointer group/circle relative ${
+                      hasNote 
+                        ? 'bg-white border border-white hover:bg-gray-200' 
+                        : 'border border-gray-600 hover:border-white hover:bg-white'
+                    }`}
+                    onClick={() => onNoteClick(data.date)}
+                  >
+                    {hasNote ? (
+                      // Show note icon for dates with notes
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-black text-xs">📝</span>
+                      </div>
+                    ) : (
+                      // Show plus icon on hover for dates without notes
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/circle:opacity-100">
+                        <span className="text-black text-xs font-bold">+</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             );

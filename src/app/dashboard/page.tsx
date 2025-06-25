@@ -15,9 +15,79 @@ export default function Dashboard() {
   const [showUnique, setShowUnique] = useState(false);
   const [callData, setCallData] = useState<CallData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState<{ [key: string]: string }>({});
+  const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState('');
   
   // Hardcoded phone number
   const phoneNumber = '+14156505285';
+
+  const fetchNotes = async (startDate: string, endDate: string) => {
+    try {
+      const keys = [];
+      let currentDate = new Date(startDate);
+      const end = new Date(endDate);
+      
+      while (currentDate <= end) {
+        keys.push(currentDate.toISOString().split('T')[0]);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      const notePromises = keys.map(async (date) => {
+        try {
+          const response = await fetch(`/api/notes?date=${date}`);
+          if (response.ok) {
+            const data = await response.json();
+            return { date, note: data.note };
+          }
+          return { date, note: '' };
+        } catch {
+          return { date, note: '' };
+        }
+      });
+      
+      const noteResults = await Promise.all(notePromises);
+      const noteMap: { [key: string]: string } = {};
+      noteResults.forEach(({ date, note }) => {
+        if (note) noteMap[date] = note;
+      });
+      
+      setNotes(noteMap);
+    } catch (error) {
+      console.error('Error fetching notes:', error);
+    }
+  };
+
+  const saveNote = async (date: string, note: string) => {
+    try {
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date, note }),
+      });
+      
+      if (response.ok) {
+        if (note.trim()) {
+          setNotes(prev => ({ ...prev, [date]: note.trim() }));
+        } else {
+          setNotes(prev => {
+            const newNotes = { ...prev };
+            delete newNotes[date];
+            return newNotes;
+          });
+        }
+        setEditingNote(null);
+        setNoteText('');
+      }
+    } catch (error) {
+      console.error('Error saving note:', error);
+    }
+  };
+
+  const handleNoteClick = (date: string) => {
+    setEditingNote(date);
+    setNoteText(notes[date] || '');
+  };
 
   useEffect(() => {
     const fetchCallData = async () => {
@@ -28,6 +98,14 @@ export default function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           setCallData(data);
+          
+          // Fetch notes for the same date range
+          if (data.length > 0) {
+            const dates = data.map((d: CallData) => d.date).sort();
+            const startDate = dates[0];
+            const endDate = dates[dates.length - 1];
+            await fetchNotes(startDate, endDate);
+          }
         } else {
           console.error('Failed to fetch call data');
         }
@@ -91,7 +169,8 @@ export default function Dashboard() {
               <CallChart 
                 callData={callData} 
                 showUnique={showUnique} 
-                timeRange={timeRange} 
+                notes={notes}
+                onNoteClick={handleNoteClick}
               />
               <StatsCards 
                 callData={callData} 
@@ -101,6 +180,46 @@ export default function Dashboard() {
           )}
         </div>
       </main>
+
+      {/* Note editing modal */}
+      {editingNote && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-black border border-white rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-lg font-medium text-white mb-4">
+              Add Note for {new Date(editingNote + 'T00:00:00').toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </h3>
+            <textarea
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder="Enter your note here... (e.g., 'Ran Facebook ad campaign')"
+              className="w-full h-32 bg-black border border-white text-white rounded-md p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-white"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setEditingNote(null);
+                  setNoteText('');
+                }}
+                className="px-4 py-2 text-white border border-white rounded-md hover:bg-white hover:text-black"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => saveNote(editingNote, noteText)}
+                className="px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200"
+              >
+                Save Note
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
