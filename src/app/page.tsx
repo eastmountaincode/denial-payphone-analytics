@@ -78,6 +78,15 @@ export default function LoginPage() {
                 </button>
               </div>
             </form>
+
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => alert('Please contact administrator for password reset')}
+                className="text-sm text-white hover:text-gray-300 underline transition-colors cursor-pointer"
+              >
+                Forgot Password?
+              </button>
+            </div>
           </div>
         </div>
       </div>
