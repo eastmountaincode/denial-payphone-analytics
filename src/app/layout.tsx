@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import HeaderContent from "./HeaderContent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,6 +16,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LSSN Analytics",
   description: "Dashboard for LSSN",
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
+  },
+  manifest: "/site.webmanifest",
+  appleWebApp: {
+    title: "LSSN DATA",
+  },
 };
 
 export default function RootLayout({
@@ -28,11 +41,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
         <header className="bg-black shadow-sm border-b border-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <h1 className="text-2xl font-bold text-white">
-              <span className="inline-block animate-stretch">LSSN Analytics Division</span> <span className="text-sm font-normal align-top">©</span>
-            </h1>
-          </div>
+          <HeaderContent />
         </header>
         {children}
       </body>

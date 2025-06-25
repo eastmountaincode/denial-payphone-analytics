@@ -19,8 +19,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-black px-4 sm:px-6 lg:px-8" style={{ minHeight: 'calc(100vh - 80px)' }}>
-      <div className="flex flex-col justify-center items-center h-full py-12">
+    <div className="bg-black px-4 sm:px-6 lg:px-8 flex flex-col justify-start items-center pt-20 pb-12" style={{ minHeight: 'calc(100vh - 64px)' }}>
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-black border border-white py-8 px-6 sm:px-10 shadow-lg rounded-lg mx-4 sm:mx-0">
             <div className="sm:mx-auto sm:w-full sm:max-w-md mb-6">
@@ -81,7 +80,7 @@ export default function LoginPage() {
 
             <div className="mt-4 text-center">
               <button
-                onClick={() => alert('What else have you forgotten?')}
+                onClick={() => alert('What else have you forgotten? Uncapitalized _______')}
                 className="text-sm text-white hover:text-gray-300 underline transition-colors cursor-pointer"
               >
                 Forgot Password?
@@ -89,7 +88,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
