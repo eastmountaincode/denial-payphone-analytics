@@ -67,9 +67,9 @@ export async function GET(request: NextRequest) {
       }
     });
     
-        // Convert to array format
+        // Convert to array format - sort with most recent dates last (so they appear on the right)
     const result = Object.entries(callsByDate)
-      .sort(([a], [b]) => a.localeCompare(b))
+      .sort(([a], [b]) => a.localeCompare(b)) // Keep chronological order so most recent is rightmost
       .map(([date, data]) => ({
         date,
         totalCalls: data.total,

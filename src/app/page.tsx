@@ -25,10 +25,10 @@ export default function LoginPage() {
           <div className="bg-black border border-white py-8 px-6 sm:px-10 shadow-lg rounded-lg mx-4 sm:mx-0">
             <div className="sm:mx-auto sm:w-full sm:max-w-md mb-6">
               <h2 className="text-center text-3xl font-extrabold text-white">
-                Sign in to Dashboard
+                LSSN Secure Login
               </h2>
               <p className="mt-2 text-center text-sm text-white">
-                Access your Twilio call analytics
+                Requests will be answered in the order they are received.
               </p>
             </div>
 
@@ -73,8 +73,8 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   className="w-full flex justify-center py-2 px-4 border border-white rounded-md shadow-sm text-sm font-medium text-black bg-white hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors cursor-pointer"
-                >
-                  Sign in
+          >
+                  Clock In
                 </button>
               </div>
             </form>

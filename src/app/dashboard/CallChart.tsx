@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { IoChatboxOutline } from 'react-icons/io5';
+import { HiPlus } from 'react-icons/hi2';
 
 interface CallData {
   date: string;
@@ -15,14 +17,22 @@ interface CallChartProps {
 
 export default function CallChart({ callData, showUnique, notes, onNoteClick }: CallChartProps) {
   const maxCalls = Math.max(...callData.map(d => showUnique ? d.uniqueCalls : d.totalCalls));
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to the right when component mounts or data changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+    }
+  }, [callData]);
 
   return (
     <div className="bg-black border border-white rounded-lg p-4">
       <h3 className="text-lg font-medium text-white mb-4">
         Calls per Day ({showUnique ? 'Unique' : 'Total'})
       </h3>
-      <div className="overflow-x-auto">
-        <div className="h-64 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
+      <div className="overflow-x-auto" ref={scrollContainerRef}>
+        <div className="h-68 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
           {callData.map((data, index) => {
             const callCount = showUnique ? data.uniqueCalls : data.totalCalls;
             const hasNote = notes[data.date];
@@ -30,14 +40,16 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
             // Show dates strategically based on time range
             let showDate = false;
             const totalDays = callData.length;
+            const isLastDate = index === callData.length - 1; // Always show the most recent date
+            
             if (totalDays <= 7) {
               showDate = true; // Show all dates for 7 days
             } else if (totalDays <= 30) {
-              showDate = index % 3 === 0; // Show every 3rd date for 30 days
+              showDate = index % 3 === 0 || isLastDate; // Show every 3rd date + most recent
             } else if (totalDays <= 60) {
-              showDate = index % 7 === 0; // Show every 7th date for 60 days
+              showDate = index % 7 === 0 || isLastDate; // Show every 7th date + most recent
             } else {
-              showDate = index % 10 === 0; // Show every 10th date for 90 days
+              showDate = index % 10 === 0 || isLastDate; // Show every 10th date + most recent
             }
             
             return (
@@ -67,7 +79,7 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
                   
                   {/* Note circle - different states for notes vs no notes */}
                   <div 
-                    className={`hidden sm:block w-4 h-4 rounded-full cursor-pointer group/circle relative ${
+                    className={`hidden sm:block w-6 h-6 rounded-full cursor-pointer group/circle relative ${
                       hasNote 
                         ? 'bg-white border border-white hover:bg-gray-200' 
                         : 'border border-gray-600 hover:border-white hover:bg-white'
@@ -77,12 +89,20 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
                     {hasNote ? (
                       // Show note icon for dates with notes
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-black text-xs">📝</span>
+                        <IoChatboxOutline className="text-black text-sm" />
                       </div>
                     ) : (
                       // Show plus icon on hover for dates without notes
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/circle:opacity-100">
-                        <span className="text-black text-xs font-bold">+</span>
+                        <HiPlus className="text-black text-sm" />
+                      </div>
+                    )}
+                    
+                    {/* Tooltip for notes */}
+                    {hasNote && (
+                      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black border border-white text-white text-xs px-2 py-1 rounded opacity-0 group-hover/circle:opacity-100 pointer-events-none z-10 max-w-xs text-center break-words">
+                        {hasNote}
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-white"></div>
                       </div>
                     )}
                   </div>
