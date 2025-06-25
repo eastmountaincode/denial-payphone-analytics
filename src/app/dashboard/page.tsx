@@ -58,7 +58,7 @@ export default function Dashboard() {
     };
 
     fetchCallData();
-  }, [timeRange]);
+  }, [timeRange, loadNotesForData]);
 
   return (
     <div className="min-h-screen bg-black">

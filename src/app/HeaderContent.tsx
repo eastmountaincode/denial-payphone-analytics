@@ -1,6 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HeaderContent() {
   const pathname = usePathname();
@@ -14,15 +16,17 @@ export default function HeaderContent() {
       {isDashboard && (
         <div className="flex items-center gap-4">
           <span className="text-white text-sm">Welcome, hoss</span>
-          <a 
+          <Link 
             href="/" 
             className="text-white text-sm hover:text-gray-300 underline transition-colors"
           >
             Logout
-          </a>
-          <img 
+          </Link>
+          <Image 
             src="/web-app-manifest-512x512.png" 
             alt="LSSN Logo" 
+            width={32}
+            height={32}
             className="h-8 w-8"
           />
         </div>
