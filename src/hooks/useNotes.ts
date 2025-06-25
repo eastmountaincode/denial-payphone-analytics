@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 interface CallData {
   date: string;
@@ -83,14 +83,14 @@ export function useNotes() {
     setNoteText('');
   };
 
-  const loadNotesForData = async (callData: CallData[]) => {
+  const loadNotesForData = useCallback(async (callData: CallData[]) => {
     if (callData.length > 0) {
       const dates = callData.map((d: CallData) => d.date).sort();
       const startDate = dates[0];
       const endDate = dates[dates.length - 1];
       await fetchNotes(startDate, endDate);
     }
-  };
+  }, []);
 
   return {
     // State

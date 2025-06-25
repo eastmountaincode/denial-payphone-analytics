@@ -22,11 +22,9 @@ export default function HeaderContent() {
           >
             Logout
           </Link>
-          <Image 
+          <img 
             src="/web-app-manifest-512x512.png" 
             alt="LSSN Logo" 
-            width={32}
-            height={32}
             className="h-8 w-8"
           />
         </div>
