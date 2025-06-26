@@ -16,7 +16,8 @@ interface CallChartProps {
 }
 
 export default function CallChart({ callData, showUnique, notes, onNoteClick }: CallChartProps) {
-  const maxCalls = Math.max(...callData.map(d => showUnique ? d.uniqueCalls : d.totalCalls));
+  // Always use total calls for the scale, so unique calls bars shrink down visually
+  const maxCalls = Math.max(...callData.map(d => d.totalCalls));
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Scroll to the right when component mounts or data changes

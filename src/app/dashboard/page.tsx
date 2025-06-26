@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState<'7' | '30' | '60' | '90'>('7');
   const [showUnique, setShowUnique] = useState(false);
   const [callData, setCallData] = useState<CallData[]>([]);
+  const [totalUniqueCallers, setTotalUniqueCallers] = useState(0);
   const [loading, setLoading] = useState(true);
   
   // Custom hook for note management
@@ -39,14 +40,22 @@ export default function Dashboard() {
     const fetchCallData = async () => {
       setLoading(true);
       try {
-        const url = `/api/calls?days=${timeRange}&phone=${encodeURIComponent(phoneNumber)}`;
+        // Get user's timezone
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const url = `/api/calls?days=${timeRange}&phone=${encodeURIComponent(phoneNumber)}&timezone=${encodeURIComponent(userTimezone)}`;
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
-          setCallData(data);
-          
-          // Fetch notes for the same date range
-          await loadNotesForData(data);
+          // Handle both old and new API response formats
+          if (data.dailyData) {
+            setCallData(data.dailyData);
+            setTotalUniqueCallers(data.totalUniqueCallers);
+            await loadNotesForData(data.dailyData);
+          } else {
+            // Fallback for old format
+            setCallData(data);
+            await loadNotesForData(data);
+          }
         } else {
           console.error('Failed to fetch call data');
         }
@@ -70,17 +79,20 @@ export default function Dashboard() {
               Twilio Call Analytics
             </h2>
             <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="unique-calls"
-                  checked={showUnique}
-                  onChange={(e) => setShowUnique(e.target.checked)}
-                  className="rounded border-white bg-black text-white focus:ring-white cursor-pointer"
-                />
-                <label htmlFor="unique-calls" className="text-white text-sm">
-                  Show unique calls only
-                </label>
+              <div className="flex items-center gap-3">
+                <span className="text-white text-sm">Show unique calls only</span>
+                <button
+                  onClick={() => setShowUnique(!showUnique)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                    showUnique ? 'bg-white' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-black transition-transform ${
+                      showUnique ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
               <div className="relative">
                 <select
@@ -116,7 +128,8 @@ export default function Dashboard() {
               />
               <StatsCards 
                 callData={callData} 
-                showUnique={showUnique} 
+                showUnique={showUnique}
+                totalUniqueCallers={totalUniqueCallers}
               />
             </div>
           )}

@@ -21,14 +21,75 @@
 
 html, body {
   height: 100%;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
+  background: #000000 !important;
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
+  background: #000000 !important;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* Ensure all containers extend to full height */
+#__next {
+  min-height: 100vh;
+  background: #000000;
+}
+
+/* Ensure dark background extends beyond viewport on all devices */
+html {
+  background: #000000;
+  min-height: 100%;
+}
+
+/* Mobile Safari and webkit specific fixes */
+@supports (-webkit-touch-callout: none) {
+  html {
+    background: #000000 !important;
+    min-height: 100%;
+  }
+  body {
+    background: #000000 !important;
+    min-height: 100vh;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200vh;
+    bottom: -200vh;
+    left: 0;
+    right: 0;
+    background: #000000;
+    z-index: -1;
+  }
+}
+
+/* Additional fix for fast scrolling white flash */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html::before {
+  content: '';
+  position: fixed;
+  top: -100vh;
+  bottom: -100vh;
+  left: 0;
+  right: 0;
+  background: #000000;
+  z-index: -2;
 }
 
 

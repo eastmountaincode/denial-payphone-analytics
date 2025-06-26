@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '7');
     const phoneNumber = searchParams.get('phone');
+    const timezone = searchParams.get('timezone') || 'America/New_York'; // Default to EST
     
     // Initialize Twilio client
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
@@ -43,31 +44,35 @@ export async function GET(request: NextRequest) {
     // Fetch incoming calls from Twilio
     const calls = await client.calls.list(queryParams);
     
-    // Group calls by date
+    // Group calls by date and track unique numbers across entire timeframe
     const callsByDate: { [key: string]: { total: number; unique: Set<string> } } = {};
+    const allUniqueNumbers = new Set<string>(); // Track unique numbers across entire timeframe
     
-    // Initialize all dates in range - include today through past days
+    // Initialize all dates in range - include today through past days (in user's timezone)
     const today = new Date();
     for (let i = 0; i < days; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const dateString = date.toISOString().split('T')[0];
+      // Convert to user's timezone for date grouping
+      const dateString = date.toLocaleDateString('en-CA', { timeZone: timezone }); // en-CA gives YYYY-MM-DD format
       callsByDate[dateString] = { total: 0, unique: new Set() };
     }
     
-    // Process calls
+    // Process calls - convert Twilio UTC timestamps to user's timezone
     calls.forEach((call) => {
-      const callDate = new Date(call.dateCreated).toISOString().split('T')[0];
+      // Convert Twilio UTC timestamp to user's timezone date
+      const callDate = new Date(call.dateCreated).toLocaleDateString('en-CA', { timeZone: timezone });
       if (callsByDate[callDate]) {
         callsByDate[callDate].total += 1;
         // Use 'from' number for unique caller tracking
         if (call.from) {
           callsByDate[callDate].unique.add(call.from);
+          allUniqueNumbers.add(call.from); // Track across entire timeframe
         }
       }
     });
     
-        // Convert to array format - sort with most recent dates last (so they appear on the right)
+    // Convert to array format - sort with most recent dates last (so they appear on the right)
     const result = Object.entries(callsByDate)
       .sort(([a], [b]) => a.localeCompare(b)) // Keep chronological order so most recent is rightmost
       .map(([date, data]) => ({
@@ -76,7 +81,11 @@ export async function GET(request: NextRequest) {
         uniqueCalls: data.unique.size
       }));
 
-    return NextResponse.json(result);
+    // Add the total unique count across entire timeframe to the response
+    return NextResponse.json({
+      dailyData: result,
+      totalUniqueCallers: allUniqueNumbers.size
+    });
     
   } catch (error) {
     console.error('Error fetching Twilio data:', error);

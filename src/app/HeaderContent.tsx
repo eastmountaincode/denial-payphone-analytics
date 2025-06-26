@@ -11,12 +11,14 @@ export default function HeaderContent() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
       <h1 className="text-2xl font-bold text-white">
         <Link href="/" className="hover:text-gray-300 transition-colors">
-          <span className="inline-block">LSSN Analytics Division</span> <span className="text-sm font-normal align-top">©</span>
+          <span className="inline-block sm:hidden">LSSN</span>
+          <span className="hidden sm:inline-block">LSSN Analytics Division</span>
+          <span className="text-sm font-normal align-top"> ©</span>
         </Link>
       </h1>
       {isDashboard && (
         <div className="flex items-center gap-4">
-          <span className="text-white text-sm">Welcome, hoss</span>
+          <span className="text-white text-sm hidden sm:block">Welcome, hoss</span>
           <Link 
             href="/" 
             className="text-white text-sm hover:text-gray-300 underline transition-colors"
