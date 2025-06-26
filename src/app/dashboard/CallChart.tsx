@@ -33,7 +33,7 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
         Calls per Day ({showUnique ? 'Unique' : 'Total'})
       </h3>
       <div className="overflow-x-auto" ref={scrollContainerRef}>
-        <div className="h-68 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
+        <div className="h-72 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
           {callData.map((data, index) => {
             const callCount = showUnique ? data.uniqueCalls : data.totalCalls;
             const hasNote = notes[data.date];
