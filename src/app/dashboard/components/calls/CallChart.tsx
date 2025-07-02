@@ -33,7 +33,7 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
         Calls per Day ({showUnique ? 'Unique' : 'Total'})
       </h3>
       <div className="overflow-x-auto" ref={scrollContainerRef}>
-        <div className="h-72 flex items-end justify-between gap-1 min-w-full mb-8 px-4">
+        <div className={`h-72 flex items-end gap-1 mb-8 px-4 ${callData.length <= 15 ? 'justify-between min-w-full' : ''}`} style={callData.length > 15 ? { minWidth: `${callData.length * 28}px` } : {}}>
           {callData.map((data, index) => {
             const callCount = showUnique ? data.uniqueCalls : data.totalCalls;
             const hasNote = notes[data.date];
@@ -54,7 +54,7 @@ export default function CallChart({ callData, showUnique, notes, onNoteClick }: 
             }
             
             return (
-              <div key={index} className="flex-1 flex flex-col items-center" style={{ minWidth: `${Math.max(100 / callData.length, 2)}%` }}>
+              <div key={index} className={`flex flex-col items-center ${callData.length <= 15 ? 'flex-1' : ''}`} style={callData.length > 15 ? { width: '24px' } : {}}>
                 <div className="text-xs text-white mb-1">{callCount}</div>
                 <div
                   className="bg-white rounded-t-sm w-full transition-all duration-300"

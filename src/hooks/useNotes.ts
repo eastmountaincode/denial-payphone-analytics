@@ -13,35 +13,14 @@ export function useNotes() {
 
   const fetchNotes = async (startDate: string, endDate: string) => {
     try {
-      const keys = [];
-      const currentDate = new Date(startDate);
-      const end = new Date(endDate);
-      
-      while (currentDate <= end) {
-        keys.push(currentDate.toISOString().split('T')[0]);
-        currentDate.setDate(currentDate.getDate() + 1);
+      // Single API call for date range
+      const response = await fetch(`/api/notes?startDate=${startDate}&endDate=${endDate}`);
+      if (response.ok) {
+        const data = await response.json();
+        setNotes(data.notes || {});
+      } else {
+        console.error('Failed to fetch notes');
       }
-      
-      const notePromises = keys.map(async (date) => {
-        try {
-          const response = await fetch(`/api/notes?date=${date}`);
-          if (response.ok) {
-            const data = await response.json();
-            return { date, note: data.note };
-          }
-          return { date, note: '' };
-        } catch {
-          return { date, note: '' };
-        }
-      });
-      
-      const noteResults = await Promise.all(notePromises);
-      const noteMap: { [key: string]: string } = {};
-      noteResults.forEach(({ date, note }) => {
-        if (note) noteMap[date] = note;
-      });
-      
-      setNotes(noteMap);
     } catch (error) {
       console.error('Error fetching notes:', error);
     }
