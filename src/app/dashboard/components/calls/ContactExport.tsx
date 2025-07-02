@@ -175,20 +175,20 @@ export default function ContactExport({ phoneNumber }: ContactExportProps) {
           <button
             onClick={handleClearDatabase}
             disabled={clearing || contactData.totalContacts === 0}
-            className={`flex items-center justify-center space-x-2 px-3 py-2 rounded-md font-medium transition-colors min-w-24 max-w-32 ${
+            className={`flex items-center justify-center space-x-1.5 px-2.5 py-1.5 rounded-md font-medium transition-colors text-sm whitespace-nowrap ${
               clearing || contactData.totalContacts === 0
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 : 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
             }`}
           >
             <HiTrash className="text-sm" />
-            <span className="text-sm">{clearing ? 'Clearing...' : 'Clear DB'}</span>
+            <span>{clearing ? 'Clearing...' : 'Clear DB'}</span>
           </button>
           
           <button
             onClick={handleSyncContacts}
             disabled={syncing}
-            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors min-w-32 max-w-48 ${
+            className={`flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-md font-medium transition-colors text-sm whitespace-nowrap ${
               syncing
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 : contactData.newContactsFromTwilio > 0
@@ -196,7 +196,7 @@ export default function ContactExport({ phoneNumber }: ContactExportProps) {
                   : 'bg-gray-700 text-gray-300 hover:bg-gray-600 cursor-pointer'
             }`}
           >
-            <HiArrowPath className={`text-lg ${syncing ? 'animate-spin' : ''}`} />
+            <HiArrowPath className={`text-sm ${syncing ? 'animate-spin' : ''}`} />
             <span>
               {syncing ? 'Syncing...' : 
                contactData.newContactsFromTwilio > 0 ? 
@@ -209,13 +209,13 @@ export default function ContactExport({ phoneNumber }: ContactExportProps) {
           <button
             onClick={handleExportCSV}
             disabled={exporting || contactData.totalContacts === 0}
-            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-md font-medium transition-colors min-w-32 max-w-40 ${
+            className={`flex items-center justify-center space-x-1.5 px-3 py-1.5 rounded-md font-medium transition-colors text-sm whitespace-nowrap ${
               exporting || contactData.totalContacts === 0
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 : 'bg-white text-black hover:bg-gray-200 cursor-pointer'
             }`}
           >
-            <HiArrowDownTray className="text-lg" />
+            <HiArrowDownTray className="text-sm" />
             <span>{exporting ? 'Exporting...' : 'Export CSV'}</span>
           </button>
         </div>
